@@ -40,7 +40,7 @@ exports.addFileController = async (req,res)=>{
 
     // read and parse files
     if (ext === '.csv') {
-        const fileContent = fs.readFileSync(file.path);
+        const fileContent = file.buffer;
         await new Promise((resolve, reject) => {
           parse(fileContent, { columns: true, trim: true }, (err, output) => {
             if (err) reject(err);
@@ -53,7 +53,7 @@ exports.addFileController = async (req,res)=>{
       } else if (ext === '.xlsx' || ext === '.xls') {
         console.log("xlsx or xls");
         
-        const workbook = XLSX.readFile(file.path);
+        const workbook = XLSX.read(file.buffer, { type: 'buffer' })
         console.log(workbook);
         
         const sheetName = workbook.SheetNames[0];
@@ -114,7 +114,7 @@ exports.addFileController = async (req,res)=>{
       await tasks.insertMany(allTasks);
 
       //Delete file after processing
-    fs.unlinkSync(file.path);
+    // fs.unlinkSync(file.path);
     const agentsWithTasks = await agents.find().populate("tasks")
     console.log(agentsWithTasks);
     
